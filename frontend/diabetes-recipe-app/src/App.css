@@ -1,0 +1,22 @@
+/* frontend/src/App.css */
+
+.upload-container {
+  max-width: 600px;
+  margin: 0 auto;
+  padding: 20px;
+  text-align: center;
+}
+
+.error-message {
+  color: red;
+  margin-top: 10px;
+}
+
+.ingredients-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.ingredients-list li {
+  padding: 5px 0;
+}
