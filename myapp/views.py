@@ -7,6 +7,7 @@ from django.contrib.auth import logout
 import requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from .models import User
 
 def signup(request):
     if request.method == 'POST':
@@ -43,10 +44,6 @@ def home_view(request):
         'target_blood_sugar': user.blood_sugar_target
     }
     return render(request, 'home.html', context)
-
-import requests
-from django.shortcuts import render
-from django.contrib.auth.decorators import login_required
 
 @login_required
 def home_view(request):
@@ -118,3 +115,28 @@ def myrecord_view(request):
 
 def myprofile_view(request):
     return render(request, 'myprofile.html')
+
+@login_required
+def myprofile_view(request):
+    user = request.user
+    context = {
+        'user_email': user.id,
+        'height': user.height,
+        'weight': user.weight,
+        'blood_sugar': user.blood_sugar_target,
+    }
+    return render(request, 'myprofile.html', context)
+
+
+@login_required
+def update_profile(request):
+    if request.method == 'POST':
+        data = request.POST
+        user = request.user
+        
+        user.height = data.get('height')
+        user.weight = data.get('weight')
+        user.blood_sugar_target = data.get('blood_sugar')
+        user.save()
+
+        return JsonResponse({'status': 'success'})

@@ -83,7 +83,7 @@
         }
 
         .profile-container {
-            margin-top: 15vh;
+            margin-top: 8vh;
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -94,17 +94,23 @@
             width: 150px;
             height: 150px;
             background-color: #ccc;
-            border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             font-size: 3rem;
             color: #666;
+            margin-bottom: 20px;
+        }
+
+        .profile-img {
+            width: 170px; /* 원하는 너비로 설정 */
+            height: auto; /* 이미지 비율을 유지하면서 높이를 자동 조정 */
+            object-fit: cover; /* 이미지가 컨테이너에 맞게 자르기 */
         }
 
         .user-info {
             font-family: 'LOTTERIACHAB', sans-serif;
-            font-size: 1.5rem;
+            font-size: 1.8rem;
         }
 
         .input-container {
@@ -167,23 +173,23 @@
 
     <div class="profile-container">
         <div class="profile-image">
-            <span>👤</span>
+            <img src= '{% static "profile.png" %}'; alt="프로필 이미지" class="profile-img">
         </div>
         <div class="user-info">
-            유저정보 : <span id="username">say6158</span>
+            유저정보: <span id="username">{{ user_email }}</span>
         </div>
         <div class="input-container">
             <div class="input-box">
                 <label for="height">키:</label>
-                <input type="text" id="height" name="height">
+                <input type="text" id="height" name="height" value="{{ height }}">
             </div>
             <div class="input-box">
                 <label for="weight">몸무게:</label>
-                <input type="text" id="weight" name="weight">
+                <input type="text" id="weight" name="weight" value="{{ weight }}">
             </div>
             <div class="input-box">
                 <label for="blood-sugar">목표 혈당 수치:</label>
-                <input type="text" id="blood-sugar" name="blood-sugar">
+                <input type="text" id="blood-sugar" name="blood_sugar" value="{{ blood_sugar }}">
             </div>
         </div>
         <button class="save-button" id="saveButton">저장</button>
@@ -191,40 +197,32 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            // 유저 정보를 불러오는 함수
-            function loadUserInfo() {
-                // localStorage에서 사용자 정보 가져오기
-                const userData = JSON.parse(localStorage.getItem('userData')) || {
-                    username: 'say6158',
-                    height: '170',
-                    weight: '60',
-                    bloodSugar: '100'
-                };
-
-                // 가져온 데이터를 HTML에 설정
-                document.getElementById('username').textContent = userData.username;
-                document.getElementById('height').value = userData.height;
-                document.getElementById('weight').value = userData.weight;
-                document.getElementById('blood-sugar').value = userData.bloodSugar;
-            }
-
-            // 페이지 로드 시 사용자 정보 불러오기
-            loadUserInfo();
-
-            // 저장 버튼 클릭 시 사용자 정보를 localStorage에 저장하는 함수
             document.getElementById('saveButton').addEventListener('click', function() {
                 const updatedData = {
-                    username: document.getElementById('username').textContent,
                     height: document.getElementById('height').value,
                     weight: document.getElementById('weight').value,
-                    bloodSugar: document.getElementById('blood-sugar').value
+                    blood_sugar: document.getElementById('blood-sugar').value
                 };
 
-                // localStorage에 업데이트된 사용자 정보 저장
-                localStorage.setItem('userData', JSON.stringify(updatedData));
-
-                // 예시로 alert로 저장 완료 메시지 출력
-                alert('정보가 저장되었습니다.');
+                // AJAX 요청으로 서버에 데이터 저장
+                fetch("{% url 'update_profile' %}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': '{{ csrf_token }}'
+                    },
+                    body: new URLSearchParams(updatedData)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 'success') {
+                        alert('정보가 저장되었습니다.');
+                        location.reload();
+                    } else {
+                        alert('저장에 실패했습니다.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
             });
         });
     </script>
