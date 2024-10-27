@@ -8,6 +8,8 @@ import requests
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from .models import User
+from .forms import ImageUploadForm
+from django.core.files.storage import FileSystemStorage
 
 def signup(request):
     if request.method == 'POST':
@@ -140,3 +142,22 @@ def update_profile(request):
         user.save()
 
         return JsonResponse({'status': 'success'})
+    
+
+def image_upload_view(request):
+    return render(request, 'imageupload.html')
+
+def image_upload_view(request):
+    uploaded_file_url = None
+
+    if request.method == 'POST':
+        form = ImageUploadForm(request.POST, request.FILES)
+        if form.is_valid():
+            # 이미지 저장
+            image_instance = form.save()
+            uploaded_file_url = image_instance.image.url  # 업로드된 이미지의 URL
+            return render(request, 'imageupload.html', {'form': form, 'uploaded_file_url': uploaded_file_url})
+    else:
+        form = ImageUploadForm()
+
+    return render(request, 'imageupload.html', {'form': form, 'uploaded_file_url': uploaded_file_url})

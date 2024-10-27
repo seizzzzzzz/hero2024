@@ -12,4 +12,6 @@ urlpatterns = [
     path('myrecord/', views.myrecord_view, name='myrecord'),
     path('myprofile/', views.myprofile_view, name='myprofile'),
     path('update-profile/', views.update_profile, name='update_profile'),
+    path('imageupload/', views.image_upload_view, name='imageupload'),
+    path('upload_image/', views.image_upload_view, name='image_upload'),  # 이미지 업로드 처리용 URL
 ]

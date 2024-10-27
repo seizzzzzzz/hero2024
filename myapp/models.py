@@ -30,3 +30,9 @@ class User(AbstractBaseUser, PermissionsMixin):
 
     def __str__(self):
         return self.id
+    
+class UploadedImage(models.Model):
+    image = models.ImageField(upload_to='uploads/')  # 'uploads/' 디렉토리에 저장
+    uploaded_at = models.DateTimeField(auto_now_add=True)
+
+
